@@ -162,3 +162,136 @@ ISR(PCINT0_vect){
         tiempo_restante = tiempo_total;
     }
 }
+
+//Funciones para los ciclos de lavado
+void suministro_agua(){
+    //encender el led de suministro de agua y apagar el resto:
+    PORTD |= (1 << SUMINISTRO_AGUA_LED_PIN);
+    PORTD &= ~(1 << LAVAR_LED_PIN);
+    PORTB &= ~((1 << ENJUAGADO_LED_PIN)|(1<<CENTRIFUGADO_LED_PIN));
+    //Establece el tiempo dependiendo del nivel de carga
+    switch (seleccion_de_intensidad){
+        case BAJA:
+            tiempo_necesario = 1;
+            break;
+        
+        case MEDIA:
+            tiempo_necesario = 2;
+            break;
+        
+        case ALTA:
+            tiempo_necesario = 3;
+            break;
+    }
+    if (segundos == tiempo_necesario){
+        state = LAVAR;
+        segundos = 0;
+        TCNT0 = 0;
+    }
+}
+void lavar(){
+    //ENCENDER LEDS Y APAGAR EL RESTO
+    PORTD |= (1 << LAVAR_LED_PIN);
+    PORTD &= ~(1 << SUMINISTRO_AGUA_LED_PIN);
+    PORTB &= ~((1 << ENJUAGADO_LED_PIN)|(1 << CENTRIFUGADO_LED_PIN));
+    
+    //Establecer duración de la etapa dependiendo del nivel de carga seleccionado
+    switch (seleccion_de_intensidad){
+        case BAJA:
+            tiempo_necesario = 3;
+            break;
+        
+        case MEDIA:
+            tiempo_necesario = 7;
+            break;
+        
+        case ALTA:
+            tiempo_necesario = 10;
+            break;
+    }
+    if (segundos == tiempo_necesario){
+        state = ENJUAGAR;
+        segundos = 0;
+        TCNT0 = 0;
+    }
+}
+void enjuagar(){
+    PORTB |= (1 << ENJUAGADO_LED_PIN);
+    PORTD &= ~((1 << SUMINISTRO_AGUA) | (1 << LAVAR_LED_PIN));
+    PORTB &= ~(1 << CENTRIFUGADO_LED_PIN);
+    //Establecer duración de la etapa dependiendo del nivel de carga seleccionado
+    switch (seleccion_de_intensidad){
+        case BAJA:
+            tiempo_necesario = 2;
+            break;
+        
+        case MEDIA:
+            tiempo_necesario = 4;
+            break;
+        
+        case ALTA:
+            tiempo_necesario = 5;
+            break;
+    }
+    if (segundos == tiempo_necesario){
+        state = CENTRIFUGAR;
+        segundos = 0;
+        TCNT0 = 0;
+    }
+
+}
+
+void centrifugar(){
+    PORTB |= (1 << CENTRIFUGADO_LED_PIN);
+    PORTD &= ~((1 << SUMINISTRO_AGUA)|(1<<LAVAR_LED_PIN));
+    PORTB &= ~(1<<ENJUAGADO_LED_PIN);
+    switch (seleccion_de_intensidad){
+        case BAJA:
+            tiempo_necesario = 3;
+            break;
+        
+        case MEDIA:
+            tiempo_necesario = 6;
+            break;
+        
+        case ALTA:
+            tiempo_necesario = 9;
+            break;
+    }
+    if (segundos == tiempo_necesario){
+        state = SUMINISTRO_AGUA;
+        segundos = 0;
+        TCNT0 = 0;
+        //Reiniciar todos los componentes para simular el estado inicial en 0
+        PORTB &= ~((1 << LOW_LOAD_LED_PIN)|(1 << MEDIUM_LOAD_LED_PIN)|(1 << HIGH_LOAD_LED_PIN));
+        PORTB &= ~((1 << ENJUAGADO_LED_PIN)|(1 << CENTRIFUGADO_LED_PIN));
+        PORTD &= ~((1<<LAVAR_LED_PIN)|(1 << SUMINISTRO_AGUA_LED_PIN));
+    }
+}
+
+int main(void){
+    //Iniciar con los LEDs apagados
+    PORTB &= ~((1 << LOW_LOAD_LED_PIN));
+
+
+    setup_pins();
+    setup_timer();
+    while (1){
+        switch (state){
+            case SUMINISTRO_AGUA:
+                suministro_agua();
+                break;
+            case LAVAR:
+                lavar();
+                break;
+            case ENJUAGAR:
+                enjuagar();
+                break;
+            case CENTRIFUGAR:
+                centrifugar();
+                break;
+        }
+    }
+    
+    
+}
