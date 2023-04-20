@@ -6,6 +6,7 @@ CFLAGS=-std=c99 -Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I.
 TARGET=main
 SRCS=lavadora.c
 
+
 all:
 	${CC} ${CFLAGS} -o ${TARGET}.bin ${SRCS}
 	${OBJCOPY} -j .text -j .data -O ihex ${TARGET}.bin ${TARGET}.hex
