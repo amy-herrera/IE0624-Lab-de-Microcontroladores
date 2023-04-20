@@ -27,10 +27,32 @@
 
 
 //Configuración de los pines del microcontrolador.
-DDRA &= ~(1 << START_PAUSE_PIN);
-DDRB &= ~((1 << LOW_LOAD_PIN) | (1 << MEDIUM_LOAD_PIN) | (1 << HIGH_LOAD_PIN));
-DDRB |= (1 << LOW_LOAD_LED_PIN) | (1 << MEDIUM_LOAD_LED_PIN) | (1 << HIGH_LOAD_LED_PIN);
-DDRB |= (1 << ENJUAGADO_LED_PIN) | (1 << CENTRIFUGADO_LED_PIN);
-DDRD |= (1 << LAVAR_LED_PIN) | (1 << SUMINISTRO_AGUA_LED_PIN);
-DDRA |= (1 << BCD_A_PIN) | (1 << BCD_B_PIN);
-DRRD |= (1 << BCD_C_PIN) | (1 << BCD_D_PIN);
+void setup_pins(){
+    DDRA &= ~(1 << START_PAUSE_PIN); //Entrada del botón de inicio pausa
+    DDRB &= ~((1 << LOW_LOAD_PIN) | (1 << MEDIUM_LOAD_PIN) | (1 << HIGH_LOAD_PIN)); //Entradas de los botones de carga
+    DDRB |= (1 << LOW_LOAD_LED_PIN) | (1 << MEDIUM_LOAD_LED_PIN) | (1 << HIGH_LOAD_LED_PIN); //LEDS en B para los Niveles de carga
+    DDRB |= (1 << ENJUAGADO_LED_PIN) | (1 << CENTRIFUGADO_LED_PIN); //LEDS en B para los ciclos de lavado
+    DDRD |= (1 << LAVAR_LED_PIN) | (1 << SUMINISTRO_AGUA_LED_PIN); //LEDs en D para los ciclos de lavado
+    DDRA |= (1 << BCD_A_PIN) | (1 << BCD_B_PIN); //BCD en A
+    DRRD |= (1 << BCD_C_PIN) | (1 << BCD_D_PIN); //BCD en D
+}
+//Definición de los estados para la lavadora
+#define SUMINISTRO_AGUA 0
+#define LAVAR 1
+#define ENJUAGAR 2
+#define CENTRIFUGAR 3
+
+//Definir las cargas de la lavadora:
+enum{
+    BAJA,
+    ALTA,
+    MEDIA,
+};
+
+//Definición de variable útiles
+volatile uint8_t segundos = 0;
+volatile uint8_t tiempo_necesario = 0;
+volatile uint8_t tiempo_total = 0;
+volatile uint8_t tiempo_restante = 0;
+int state = SUMINISTRO_AGUA;
+int seleccion_de_intensidad = BAJA;
