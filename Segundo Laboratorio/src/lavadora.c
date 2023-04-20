@@ -9,12 +9,9 @@
 #define MEDIUM_LOAD_PIN PINB1
 #define LOW_LOAD_PIN PINB0
 
-<<<<<<< HEAD
 // Definir el pin para el display
 #define DISPLAY PIND6
 
-=======
->>>>>>> ee10f8bf745f76b44a1baa6f6665149762a30c31
 // Definir pines de LEDs
 #define CENTRIFUGADO_LED_PIN PINB4
 #define ENJUAGADO_LED_PIN PINB3
@@ -41,10 +38,7 @@ void setup_pins(){
     DDRD |= (1 << LAVAR_LED_PIN) | (1 << SUMINISTRO_AGUA_LED_PIN); //LEDs en D para los ciclos de lavado
     DDRA |= (1 << BCD_A_PIN) | (1 << BCD_B_PIN); //BCD en A
     DRRD |= (1 << BCD_C_PIN) | (1 << BCD_D_PIN); //BCD en D
-<<<<<<< HEAD
     DDRD |= (1 << DISPLAY); //Pin para el display
-=======
->>>>>>> ee10f8bf745f76b44a1baa6f6665149762a30c31
 }
 //Definición de los estados para la lavadora
 #define SUMINISTRO_AGUA 0
@@ -66,7 +60,6 @@ volatile uint8_t tiempo_total = 0;
 volatile uint8_t tiempo_restante = 0;
 int state = SUMINISTRO_AGUA;
 int seleccion_de_intensidad = BAJA;
-<<<<<<< HEAD
 
 //Struct para realizar una máquina de estados representativa de la lavadora
 
@@ -105,4 +98,67 @@ PCMSK0 |= (1 << PCINT2) | (1 << PCINT1) | (1 << PCINT0);
 PCICR |= (1 << PICE1) | (1 << PCIE0);
 
 
+/**************************************************************
+*
+*               Definición de los ISR
+*
+**************************************************************/
 
+//ISR Para el timer
+ISR(TIMER0_OVF_vect){
+    static uint8_t counter = 0;
+    counter++;
+
+    //por la definición del timer a 1024, se tiene que cada 31 ciclos hay un segundo de tiempo real.
+    if (counter == 31){
+        segundos++;
+        tiempo_restante--;
+        //Aquí se actualizan los displays
+    }
+    //Cuando se alcanza el tiempo necesario, se actualiza el estado por medio de la función
+    if (segundos == tiempo_necesario){
+        segundo = 0;
+        TCNT0 = 0;
+        TIMSK &= ~(1 << TOEI0);
+    }
+    counter = 0;
+}
+
+//ISR para el botón de inicio/pausa
+ISR(PCINT1_vect){
+    if(PINA & (1 << START_PAUSE_PIN)){
+        //Si el timer está activo se debe detener:
+        if (TIMSK & (1 << TOIE0)){
+            TIMSK &= ~(1 << TOEI0);
+        }
+        else{
+        // Si está detenido lo iniciamos
+        TIMSK |= (1 << TOEI0);
+        }
+    }
+}
+
+//ISR para los botones de selección de carga
+ISR(PCINT0_vect){
+    if (PINB & (1 << LOW_LOAD_PIN)){
+        seleccion_de_intensidad = BAJA;
+        PORTB |= (1 << LOW_LOAD_LED_PIN);
+        PORTB &= ~((1 << MEDIUM_LOAD_LED_PIN) | (1 << HIGH_LOAD_LED_PIN));
+        tiempo_total = 9;
+        tiempo_restante = tiempo_total;
+
+    }else if(PINB & (1 << MEDIUM_LOAD_PIN)){
+        seleccion_de_intensidad = MEDIA;
+        PORTB |= (1 << MEDIUM_LOAD_LED_PIN);
+        PORTB &= ~((1 << HIGH_LOAD_LED_PIN) | (1 << LOW_LOAD_LED_PIN));
+        tiempo_total = 19;
+        tiempo_restante = tiempo_total;
+
+    } else if(PINB & (1 << HIGH_LOAD_PIN)){
+        seleccion_de_intensidad = ALTA;
+        PORTB |= (1 << HIGH_LOAD_LED_PIN);
+        PORTB &= ~((1 << MEDIUM_LOAD_LED_PIN) | (1 << LOW_LOAD_LED_PIN));
+        tiempo_total = 27;
+        tiempo_restante = tiempo_total;
+    }
+}
