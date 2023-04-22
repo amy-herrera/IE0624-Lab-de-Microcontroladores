@@ -2,7 +2,6 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-
 // Definir pines de botones
 #define START_PAUSE_PIN PINA2
 #define HIGH_LOAD_PIN PINB2
@@ -30,15 +29,19 @@
 
 
 //Configuración de los pines del microcontrolador.
-void setup_pins(){
+void setup_pins(){    
+    DDRA |= ((1 << BCD_A_PIN) | (1 << BCD_B_PIN)); //BCD en A
     DDRA &= ~(1 << START_PAUSE_PIN); //Entrada del botón de inicio pausa
     DDRB &= ~((1 << LOW_LOAD_PIN) | (1 << MEDIUM_LOAD_PIN) | (1 << HIGH_LOAD_PIN)); //Entradas de los botones de carga
     DDRB |= (1 << LOW_LOAD_LED_PIN) | (1 << MEDIUM_LOAD_LED_PIN) | (1 << HIGH_LOAD_LED_PIN); //LEDS en B para los Niveles de carga
     DDRB |= (1 << ENJUAGADO_LED_PIN) | (1 << CENTRIFUGADO_LED_PIN); //LEDS en B para los ciclos de lavado
-    DDRD |= (1 << LAVAR_LED_PIN) | (1 << SUMINISTRO_AGUA_LED_PIN); //LEDs en D para los ciclos de lavado
-    DDRA |= (1 << BCD_A_PIN) | (1 << BCD_B_PIN); //BCD en A
-    DRRD |= (1 << BCD_C_PIN) | (1 << BCD_D_PIN); //BCD en D
-    DDRD |= (1 << DISPLAY); //Pin para el display
+    DDRD |= ((1 << LAVAR_LED_PIN) | (1 << SUMINISTRO_AGUA_LED_PIN) | (1 << BCD_C_PIN) | (1 << BCD_D_PIN) | (1 << DISPLAY)); //LEDs en D para los ciclos de lavado
+    //DDRD |= ((1 << BCD_C_PIN) | (1 << BCD_D_PIN) | (1 << DISPLAY)); //BCD en D
+    //DDRD |= (1 << DISPLAY); //Pin para el display
+    
+    // Activar pull-up para los botones
+    PORTA |= (1 << START_PAUSE_PIN);
+    //PORTB |= (1 << LOW_LOAD_PIN) | (1 << MEDIUM_LOAD_PIN) | (1 << HIGH_LOAD_PIN);
 }
 //Definición de los estados para la lavadora
 #define SUMINISTRO_AGUA 0
@@ -58,8 +61,10 @@ volatile uint8_t segundos = 0;
 volatile uint8_t tiempo_necesario = 0;
 volatile uint8_t tiempo_total = 0;
 volatile uint8_t tiempo_restante = 0;
-int state = SUMINISTRO_AGUA;
-int seleccion_de_intensidad = BAJA;
+volatile uint8_t decenas = 0; 
+volatile uint8_t unidades = 0;
+volatile int state = SUMINISTRO_AGUA;
+volatile int seleccion_de_intensidad = BAJA;
 
 //Struct para realizar una máquina de estados representativa de la lavadora
 
@@ -83,20 +88,87 @@ void setup_timer(){
     TCNT0 = 0;
 
     //Habilitar interrupción del timer 0.
-    TIMSK |= (1 << TOIE0)
+    TIMSK |= (1 << TOIE0);
 }
 
-//Configurar las interrupciones
+void setup_interrupts(){
+    //Configurar las interrupciones
 
-//Interrupcion del botón de inicio/pausa (prioritario)
-PCMSK1 |= (1 << PCINT10);
+    //Interrupcion del botón de inicio/pausa (prioritario)
+    PCMSK1 |= (1 << PCINT10);
 
-//Interrupciones de los niveles de carga (No prioritarios)
-PCMSK0 |= (1 << PCINT2) | (1 << PCINT1) | (1 << PCINT0);
+    //Interrupciones de los niveles de carga (No prioritarios)
+    PCMSK |= (1 << PCINT2) | (1 << PCINT1) | (1 << PCINT0);
 
-//Habilitación de las interrupciones anteriormente creadas
-PCICR |= (1 << PICE1) | (1 << PCIE0);
+    //Habilitación de las interrupciones anteriormente creadas
+    GIMSK |= (1 << PCIE1) | (1 << PCIE0);
+}
 
+void set_pines(uint8_t decimal) {
+
+	switch (decimal) { 
+    			case 0:
+    				PORTD &= ~((1 << BCD_C_PIN)|(1<<BCD_D_PIN));
+    				PORTA &= ~((1 << BCD_A_PIN)|(1<<BCD_B_PIN));
+				    break;	
+							
+    			case 1:
+    			    PORTD |= (1 << BCD_D_PIN);
+    				PORTD &= ~((1 << BCD_C_PIN));
+    				PORTA &= ~((1 << BCD_A_PIN)|(1<<BCD_B_PIN));
+				    break;	
+					
+    			case 2:
+    			    PORTD |= (1 << BCD_C_PIN);
+    				PORTD &= ~((1 << BCD_D_PIN));
+    			    PORTA &= ~((1 << BCD_A_PIN)|(1<<BCD_B_PIN));
+				    break;	
+    		
+    			case 3:
+    				PORTD |= ((1 << BCD_C_PIN)|(1<<BCD_D_PIN));
+    				PORTA &= ~((1 << BCD_A_PIN)|(1<<BCD_B_PIN));
+				    break;
+						
+			    case 4:		
+			        PORTD &= ~((1 << BCD_C_PIN)|(1<<BCD_D_PIN));
+			        PORTA |= (1 << BCD_B_PIN);
+			        PORTA &= ~((1 << BCD_A_PIN));
+				    break;
+						
+			    case 5: 
+			        PORTD |= (1 << BCD_D_PIN);
+    				PORTD &= ~((1 << BCD_C_PIN));	
+    				PORTA |= (1 << BCD_B_PIN);
+			        PORTA &= ~((1 << BCD_A_PIN));	
+				    break;	
+					
+			    case 6:
+				    PORTD |= (1 << BCD_C_PIN);
+    				PORTD &= ~((1 << BCD_D_PIN));	
+    				PORTA |= (1 << BCD_B_PIN);
+			        PORTA &= ~((1 << BCD_A_PIN));	
+				    break;	
+				
+			    case 7:
+			        PORTD |= ((1 << BCD_C_PIN)|(1<<BCD_D_PIN));
+				    PORTA |= (1 << BCD_B_PIN);
+			        PORTA &= ~((1 << BCD_A_PIN));	
+				    break;	
+					
+			    case 8:	
+			        PORTD &= ~((1 << BCD_C_PIN)|(1<<BCD_D_PIN));
+				    PORTA |= (1 << BCD_A_PIN);
+			        PORTA &= ~((1 << BCD_B_PIN));	
+				    break;	
+					
+			    case 9:
+			        PORTD |= (1 << BCD_D_PIN);
+    				PORTD &= ~((1 << BCD_C_PIN));
+    				PORTA |= (1 << BCD_A_PIN);
+			        PORTA &= ~((1 << BCD_B_PIN));
+				    break;	
+    			}						
+}
 
 /**************************************************************
 *
@@ -113,15 +185,19 @@ ISR(TIMER0_OVF_vect){
     if (counter == 31){
         segundos++;
         tiempo_restante--;
+        unidades = tiempo_restante%10; 
+        decenas=(tiempo_restante/10)%10;
         //Aquí se actualizan los displays
+        set_pines(unidades);
+        counter = 0;
     }
     //Cuando se alcanza el tiempo necesario, se actualiza el estado por medio de la función
     if (segundos == tiempo_necesario){
-        segundo = 0;
+        segundos = 0;
         TCNT0 = 0;
-        TIMSK &= ~(1 << TOEI0);
+        TIMSK &= ~(1 << TOIE0);
     }
-    counter = 0;
+    
 }
 
 //ISR para el botón de inicio/pausa
@@ -129,11 +205,11 @@ ISR(PCINT1_vect){
     if(PINA & (1 << START_PAUSE_PIN)){
         //Si el timer está activo se debe detener:
         if (TIMSK & (1 << TOIE0)){
-            TIMSK &= ~(1 << TOEI0);
+            TIMSK &= ~(1 << TOIE0);
         }
         else{
         // Si está detenido lo iniciamos
-        TIMSK |= (1 << TOEI0);
+        TIMSK |= (1 << TOIE0);
         }
     }
 }
@@ -147,7 +223,7 @@ ISR(PCINT0_vect){
         tiempo_total = 9;
         tiempo_restante = tiempo_total;
 
-    }else if(PINB & (1 << MEDIUM_LOAD_PIN)){
+    } else if(PINB & (1 << MEDIUM_LOAD_PIN)){
         seleccion_de_intensidad = MEDIA;
         PORTB |= (1 << MEDIUM_LOAD_LED_PIN);
         PORTB &= ~((1 << HIGH_LOAD_LED_PIN) | (1 << LOW_LOAD_LED_PIN));
@@ -273,9 +349,10 @@ int main(void){
     //Iniciar con los LEDs apagados
     PORTB &= ~((1 << LOW_LOAD_LED_PIN));
 
-
     setup_pins();
+    setup_interrupts();
     setup_timer();
+    
     while (1){
         switch (state){
             case SUMINISTRO_AGUA:
