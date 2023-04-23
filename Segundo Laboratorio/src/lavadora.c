@@ -30,8 +30,12 @@
 
 //Configuración de los pines del microcontrolador.
 void setup_pins(){    
-    DDRA |= ((1 << BCD_A_PIN) | (1 << BCD_B_PIN)); //BCD en A
+
     DDRA &= ~(1 << START_PAUSE_PIN); //Entrada del botón de inicio pausa
+
+
+    DDRA |= ((1 << BCD_A_PIN) | (1 << BCD_B_PIN)); //BCD en A
+    //DDRA &= ~(1 << START_PAUSE_PIN); //Entrada del botón de inicio pausa
     DDRB &= ~((1 << LOW_LOAD_PIN) | (1 << MEDIUM_LOAD_PIN) | (1 << HIGH_LOAD_PIN)); //Entradas de los botones de carga
     DDRB |= (1 << LOW_LOAD_LED_PIN) | (1 << MEDIUM_LOAD_LED_PIN) | (1 << HIGH_LOAD_LED_PIN); //LEDS en B para los Niveles de carga
     DDRB |= (1 << ENJUAGADO_LED_PIN) | (1 << CENTRIFUGADO_LED_PIN); //LEDS en B para los ciclos de lavado
@@ -41,7 +45,7 @@ void setup_pins(){
     
     // Activar pull-up para los botones
     PORTA |= (1 << START_PAUSE_PIN);
-    //PORTB |= (1 << LOW_LOAD_PIN) | (1 << MEDIUM_LOAD_PIN) | (1 << HIGH_LOAD_PIN);
+    PORTB |= (1 << LOW_LOAD_PIN) | (1 << MEDIUM_LOAD_PIN) | (1 << HIGH_LOAD_PIN);
 }
 //Definición de los estados para la lavadora
 #define SUMINISTRO_AGUA 0
@@ -93,9 +97,12 @@ void setup_timer(){
 
 void setup_interrupts(){
     //Configurar las interrupciones
+    
+    PCMSK1 |= (1 << PCINT10); //Interrupcion del boton de inicio/pausa (prioritario)
+
 
     //Interrupcion del botón de inicio/pausa (prioritario)
-    PCMSK1 |= (1 << PCINT10);
+    //PCMSK1 |= (1 << PCINT10);
 
     //Interrupciones de los niveles de carga (No prioritarios)
     PCMSK |= (1 << PCINT2) | (1 << PCINT1) | (1 << PCINT0);
@@ -104,6 +111,7 @@ void setup_interrupts(){
     GIMSK |= (1 << PCIE1) | (1 << PCIE0);
 }
 
+// Funcion para asignar los pines para los displays
 void set_pines(uint8_t decimal) {
 
 	switch (decimal) { 
@@ -182,22 +190,28 @@ ISR(TIMER0_OVF_vect){
     counter++;
 
     //por la definición del timer a 1024, se tiene que cada 31 ciclos hay un segundo de tiempo real.
-    if (counter == 31){
+    if (counter == 97){
         segundos++;
         tiempo_restante--;
         unidades = tiempo_restante%10; 
         decenas=(tiempo_restante/10)%10;
         //Aquí se actualizan los displays
-        set_pines(unidades);
+        
         counter = 0;
     }
     //Cuando se alcanza el tiempo necesario, se actualiza el estado por medio de la función
     if (segundos == tiempo_necesario){
         segundos = 0;
         TCNT0 = 0;
-        TIMSK &= ~(1 << TOIE0);
+        //TIMSK &= ~(1 << TOIE0);
     }
     
+    _delay_ms(5);
+    PORTD &= ~((1 << DISPLAY));
+    set_pines(decenas);
+    _delay_ms(5);
+    PORTD |= ((1 << DISPLAY));
+    set_pines(unidades);
 }
 
 //ISR para el botón de inicio/pausa
@@ -346,14 +360,17 @@ void centrifugar(){
 }
 
 int main(void){
+
     //Iniciar con los LEDs apagados
-    PORTB &= ~((1 << LOW_LOAD_LED_PIN));
+    //PORTB &= ~((1 << LOW_LOAD_LED_PIN));
+    PORTD &= ~(1 << SUMINISTRO_AGUA_LED_PIN);
 
     setup_pins();
     setup_interrupts();
     setup_timer();
     
     while (1){
+    
         switch (state){
             case SUMINISTRO_AGUA:
                 suministro_agua();
