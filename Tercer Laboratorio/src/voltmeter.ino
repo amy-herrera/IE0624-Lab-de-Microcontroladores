@@ -11,7 +11,7 @@
 #define RST 8
 
 //Configuración de la pantalla
-PCD8544 lcd = PCD8544(SCLK, DIN, DC, CS, RST);
+Adafruit_PCD8544 display = Adafruit_PCD8544(SCLK, DIN, DC, CS, RST);
 
 //Pines analógicos de entradas de tensión
 int volt1 = A0;
@@ -55,29 +55,45 @@ void setup(){
   pinMode(v2_sign, INPUT);
   pinMode(v3_sign, INPUT);
   pinMode(v4_sign, INPUT);
+  // Inicializar la pantalla
+  display.begin();
+  display.setContrast(50); // Ajustar el contraste de la pantalla (0-127)
+
+  // Limpiar la pantalla
+  display.clearDisplay();
 
 }
 
 void loop(){
-
-  // Aplica el ciclo de trabajo al pinPWM
-  analogWrite(pinPWM, dutyCycle);
-
-  // se lee el valor digital del pin 7
-  int pin7Value = digitalRead(pin7);
-
-  //Se define el modo de operación:
-
-  //Si se tiene en alto, el modo de operación es DC
-  if (pin7Valule == HIGH){
-    //Formula para calcular las tensiones:
+  analogWrite(out_PWM, 127);
     v1 = ((analogRead(volt1)*2.0 + 0.5)/1024.0)*(25);
+    v2 = ((analogRead(volt2)*2.0 + 0.5)/1024.0)*(25);
+    v3 = ((analogRead(volt3)*2.0 + 0.5)/1024.0)*(25);
+    v4 = ((analogRead(volt4)*2.0 + 0.5)/1024.0)*(25);
+    display.setCursor(0, 0);
+    display.println("Lectura en DC");
+    //Tensión uno
+    display.setCursor(0, 1);
+    display.println("V1:");
+    display.setCursor(3, 1);
+    display.println(v1);
+    //Tensión dos
+    display.setCursor(0, 2);
+    display.println("V2:");
+    display.setCursor(3, 2);
+    display.println(v2);
+    //Tensión tres
+    display.setCursor(0, 3);
+    display.println("V3:");
+    display.setCursor(3, 3);
+    display.println(v3);
+    //Tensión cuatro
+    display.setCursor(0, 4);
+    display.println("V4:");
+    display.setCursor(3, 4);
+    display.println(v4);
 
-  }
-
-  //Si se tiene en bajo es AC
-  else{
-
-  }
+    display.display(); // Actualizar la pantalla
+  
 
 }
