@@ -65,7 +65,11 @@ void setup(){
 }
 
 void loop(){
+  //Leer el modo en el que se están leyendo las tensiones
+  int mode = digitalRead(switch_AC_DC);
+  //envio de la señal cuadrada para el circuito de configuración de tensión
   analogWrite(out_PWM, 127);
+  if (mode == LOW){
     v1 = ((analogRead(volt1)*2.0 + 0.5)/1024.0)*(25);
     v2 = ((analogRead(volt2)*2.0 + 0.5)/1024.0)*(25);
     v3 = ((analogRead(volt3)*2.0 + 0.5)/1024.0)*(25);
@@ -75,7 +79,7 @@ void loop(){
     //Tensión uno
     display.setCursor(0, 1);
     display.println("V1:");
-    display.setCursor(3, 1);
+    display.setCursor(83, 1);
     display.println(v1);
     //Tensión dos
     display.setCursor(0, 2);
@@ -85,15 +89,21 @@ void loop(){
     //Tensión tres
     display.setCursor(0, 3);
     display.println("V3:");
-    display.setCursor(3, 3);
+    display.setCursor(83, 3);
     display.println(v3);
     //Tensión cuatro
     display.setCursor(0, 4);
     display.println("V4:");
-    display.setCursor(3, 4);
+    display.setCursor(83, 4);
     display.println(v4);
+  }
+  else{
 
-    display.display(); // Actualizar la pantalla
+  }
+  
+  display.display(); // Actualizar la pantalla
+  delay(1000);
+  display.clearDisplay();
   
 
 }
