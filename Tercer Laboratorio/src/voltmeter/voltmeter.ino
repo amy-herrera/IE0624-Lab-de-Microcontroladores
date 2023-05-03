@@ -97,7 +97,7 @@ void loop(){
     display.print("V4:");
     //display.setCursor(83, 4);
 
-    display.setCursor(0, 1);
+    //display.setCursor(0, 1);
     display.print("V1:");
     //display.setCursor(83, 1);
     display.println(v1);
