@@ -77,7 +77,7 @@ void loop(){
     display.setCursor(0, 0);
     display.println("Lectura en DC");
     //Tensión uno
-<<<<<<< HEAD
+
     //display.setCursor(0, 1);
     display.print("V1:");
     //display.setCursor(83, 1);
@@ -96,26 +96,26 @@ void loop(){
     //display.setCursor(0, 4);
     display.print("V4:");
     //display.setCursor(83, 4);
-=======
+
     display.setCursor(0, 1);
-    display.println("V1:");
-    display.setCursor(83, 1);
+    display.print("V1:");
+    //display.setCursor(83, 1);
     display.println(v1);
     //Tensión dos
-    display.setCursor(0, 2);
-    display.println("V2:");
-    display.setCursor(3, 2);
+    //display.setCursor(0, 2);
+    display.print("V2:");
+    //display.setCursor(3, 2);
     display.println(v2);
     //Tensión tres
-    display.setCursor(0, 3);
-    display.println("V3:");
-    display.setCursor(83, 3);
+    //display.setCursor(0, 3);
+    display.print("V3:");
+    //display.setCursor(83, 3);
     display.println(v3);
     //Tensión cuatro
-    display.setCursor(0, 4);
-    display.println("V4:");
-    display.setCursor(83, 4);
->>>>>>> 3ba638ff290102c9e46db0efb590fbcfcc7bf6ae
+    //display.setCursor(0, 4);
+    display.print("V4:");
+    //display.setCursor(83, 4);
+
     display.println(v4);
   }
   else{
