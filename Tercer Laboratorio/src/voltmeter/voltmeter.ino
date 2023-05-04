@@ -1,4 +1,5 @@
 #include <Adafruit_PCD8544.h>
+#include <math.h>
 
 //Definición de los pines
 
@@ -22,13 +23,10 @@ int volt4 = A3;
 
 //Pines de utilidad
 int switch_AC_DC = 7;
-int out_PWM = 6;
-
-//Pines de signo para las tensiones
-int v2_sign = 3;
-int v1_sign = 2;
-int v3_sign = 4;
-int v4_sign = 5;
+int led_one = 3;
+int led_two = 4;
+int led_three = 5;
+int led_four = 6;
 
 
 //Variables de almacenar tensiones:
@@ -37,8 +35,6 @@ float v2 = 0;
 float v3 = 0;
 float v4 = 0;
 
-// Establece el ciclo de trabajo al 50% para el pwm
-int dutyCycle = 127;
 
 void setup(){
   //Pines de tensión
@@ -48,13 +44,11 @@ void setup(){
   pinMode(volt4, INPUT);
   //pin del switch
   pinMode(switch_AC_DC, INPUT);
-  //pin del PWM
-  pinMode(out_PWM, OUTPUT);
-  //pines de signo de tensión
-  pinMode(v1_sign, INPUT);
-  pinMode(v2_sign, INPUT);
-  pinMode(v3_sign, INPUT);
-  pinMode(v4_sign, INPUT);
+  //pines de los leds
+  pinMode(led_one, OUTPUT);
+  pinMode(led_two, OUTPUT);
+  pinMode(led_three, OUTPUT);
+  pinMode(led_four, OUTPUT);
   // Inicializar la pantalla
   display.begin();
   display.setContrast(50); // Ajustar el contraste de la pantalla (0-127)
@@ -65,60 +59,85 @@ void setup(){
 }
 
 void loop(){
+  v1 = 0;
+  v2 = 0;
+  v3 = 0;
+  v4 = 0;
   //Leer el modo en el que se están leyendo las tensiones
   int mode = digitalRead(switch_AC_DC);
-  //envio de la señal cuadrada para el circuito de configuración de tensión
-  analogWrite(out_PWM, 127);
   if (mode == LOW){
-    v1 = ((analogRead(volt1)*2.0 + 0.5)/1024.0)*(25);
-    v2 = ((analogRead(volt2)*2.0 + 0.5)/1024.0)*(25);
-    v3 = ((analogRead(volt3)*2.0 + 0.5)/1024.0)*(25);
-    v4 = ((analogRead(volt4)*2.0 + 0.5)/1024.0)*(25);
     display.setCursor(0, 0);
     display.println("Lectura en DC");
-    //Tensión uno
-
-    //display.setCursor(0, 1);
-    display.print("V1:");
-    //display.setCursor(83, 1);
-    display.println(v1);
-    //Tensión dos
-    //display.setCursor(0, 2);
-    display.print("V2:");
-    //display.setCursor(3, 2);
-    display.println(v2);
-    //Tensión tres
-    //display.setCursor(0, 3);
-    display.print("V3:");
-    //display.setCursor(83, 3);
-    display.println(v3);
-    //Tensión cuatro
-    //display.setCursor(0, 4);
-    display.print("V4:");
-    //display.setCursor(83, 4);
-
-    //display.setCursor(0, 1);
-    display.print("V1:");
-    //display.setCursor(83, 1);
-    display.println(v1);
-    //Tensión dos
-    //display.setCursor(0, 2);
-    display.print("V2:");
-    //display.setCursor(3, 2);
-    display.println(v2);
-    //Tensión tres
-    //display.setCursor(0, 3);
-    display.print("V3:");
-    //display.setCursor(83, 3);
-    display.println(v3);
-    //Tensión cuatro
-    //display.setCursor(0, 4);
-    display.print("V4:");
-    //display.setCursor(83, 4);
-
-    display.println(v4);
+    //Tension 1
+    v1 = analogRead(volt1) * (5.0 / 1023.0);
+    if (v1 < 0 || v1 > 4.92){
+      digitalWrite(led_one, HIGH);
+      display.print("V1:");
+      display.println("ERROR");
+    }
+    else{
+      v1 = (61*v1 -150)/6 + 0.01;
+      display.print("V1:");
+      display.println(v1);
+    }
+    //Tension 2
+    v2 = analogRead(volt2) * (5.0 / 1023.0);
+    if (v1 < 0 || v1 > 4.92){
+      digitalWrite(led_two, HIGH);
+      display.print("V2:");
+      display.println("ERROR");
+    }
+    else{
+      v2 = (61*v2 -150)/6 + 0.01;
+      display.print("V2:");
+      display.println(v2);
+    }
+    //Tension 3
+    v3 = analogRead(volt3) * (5.0 / 1023.0);
+    if (v1 < 0 || v1 > 4.92){
+      digitalWrite(led_one, HIGH);
+      display.print("V3:");
+      display.println("ERROR");
+    }
+    else{
+      v3 = (61*v3 -150)/6 + 0.01;
+      display.print("V3:");
+      display.println(v3);
+    }
+    //Tensión 4
+    v4 = analogRead(volt4) * (5.0 / 1023.0);
+    if (v1 < 0 || v1 > 4.92){
+      digitalWrite(led_one, HIGH);
+      display.print("V1:");
+      display.println("ERROR");
+    }
+    else{
+      v4 = (61*v4 -150)/6 + 0.01;
+      display.print("V4:");
+      display.println(v4);
+    }
   }
+  //Caso AC
   else{
+    display.setCursor(0, 0);
+    display.println("Lectura en AC");
+    //Lectura tensión uno
+    for (int i = 0; i < 150; i++){
+      v1 = v1 + analogRead(volt1) * (5.0 / 1023.0);
+    }
+    v1 = v1/150;
+    if (v1 < 0 || v1 > 4.92){
+      digitalWrite(led_one, HIGH);
+      display.print("V1:");
+      display.println("ERROR");
+    }
+    else{
+      v1 = (61*v1 -150)/6 + 0.01;
+      v1 = v1*sqrt(2);
+      display.print("V1:");
+      display.println(v1);
+    }
+
 
   }
   
