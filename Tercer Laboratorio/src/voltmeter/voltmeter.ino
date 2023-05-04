@@ -1,5 +1,5 @@
 #include <Adafruit_PCD8544.h>
-
+#include <SoftwareSerial.h>
 //Definición de los pines
 
 
@@ -22,6 +22,7 @@ int volt4 = A3;
 
 //Pines de utilidad
 int switch_AC_DC = 7;
+int switch_CSV = 12;
 int out_PWM = 6;
 
 //Pines de signo para las tensiones
@@ -41,6 +42,8 @@ float v4 = 0;
 int dutyCycle = 127;
 
 void setup(){
+
+  Serial.begin(115200);
   //Pines de tensión
   pinMode(volt1, INPUT);
   pinMode(volt2, INPUT);
@@ -48,6 +51,7 @@ void setup(){
   pinMode(volt4, INPUT);
   //pin del switch
   pinMode(switch_AC_DC, INPUT);
+  pinMode(switch_CSV, INPUT);
   //pin del PWM
   pinMode(out_PWM, OUTPUT);
   //pines de signo de tensión
@@ -67,7 +71,11 @@ void setup(){
 void loop(){
   //Leer el modo en el que se están leyendo las tensiones
   int mode = digitalRead(switch_AC_DC);
+  int button = digitalRead(switch_CSV);
+  
   //envio de la señal cuadrada para el circuito de configuración de tensión
+  
+ 
   analogWrite(out_PWM, 127);
   if (mode == LOW){
     v1 = ((analogRead(volt1)*2.0 + 0.5)/1024.0)*(25);
@@ -75,6 +83,7 @@ void loop(){
     v3 = ((analogRead(volt3)*2.0 + 0.5)/1024.0)*(25);
     v4 = ((analogRead(volt4)*2.0 + 0.5)/1024.0)*(25);
     display.setCursor(0, 0);
+    
     display.println("Lectura en DC");
     //Tensión uno
 
@@ -117,10 +126,41 @@ void loop(){
     //display.setCursor(83, 4);
 
     display.println(v4);
+    
   }
   else{
 
   }
+
+
+if (button == HIGH){
+    v1 = ((analogRead(volt1)*2.0 + 0.5)/1024.0)*(25);
+    v2 = ((analogRead(volt2)*2.0 + 0.5)/1024.0)*(25);
+    v3 = ((analogRead(volt3)*2.0 + 0.5)/1024.0)*(25);
+    v4 = ((analogRead(volt4)*2.0 + 0.5)/1024.0)*(25);
+    display.setCursor(0, 0);
+    
+    Serial.println("Lectura en DC");
+    //Tensión uno
+
+    //display.setCursor(0, 1);
+    Serial.print("V1:");
+    //display.setCursor(83, 1);
+    Serial.println(v1);
+    //Tensión dos
+    //display.setCursor(0, 2);
+    Serial.print("V2:");
+    //display.setCursor(3, 2);
+    Serial.println(v2);
+    //Tensión tres
+    //display.setCursor(0, 3);
+    Serial.print("V3:");
+    //display.setCursor(83, 3);
+    Serial.println(v3);
+    //Tensión cuatro
+    //display.setCursor(0, 4);
+    Serial.print("V4:");
+}
   
   display.display(); // Actualizar la pantalla
   delay(1000);
