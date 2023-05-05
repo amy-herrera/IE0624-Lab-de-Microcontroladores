@@ -70,49 +70,49 @@ void loop(){
     display.println("Lectura en DC");
     //Tension 1
     v1 = analogRead(volt1) * (5.0 / 1023.0);
-    if (v1 < 0 || v1 > 4.92){
+    if (v1 < 0 || v1 > 4.9){
       digitalWrite(led_one, HIGH);
       display.print("V1:");
       display.println("ERROR");
     }
     else{
-      v1 = (61*v1 -150)/6 + 0.01;
+      v1 = ((v1 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       display.print("V1:");
       display.println(v1);
     }
     //Tension 2
-    v2 = analogRead(volt2) * (5.0 / 1023.0);
-    if (v1 < 0 || v1 > 4.92){
+    v2 = analogRead(volt2)* (5.0 / 1023.0);
+    if (v2 < 0 || v2 > 4.9){
       digitalWrite(led_two, HIGH);
       display.print("V2:");
       display.println("ERROR");
     }
     else{
-      v2 = (61*v2 -150)/6 + 0.01;
+      v2 = ((v2 - 0)/(5 - 0))*(25-(-25)) + -25 +0.1;
       display.print("V2:");
       display.println(v2);
     }
     //Tension 3
     v3 = analogRead(volt3) * (5.0 / 1023.0);
-    if (v1 < 0 || v1 > 4.92){
+    if (v3 < 0 || v3 > 4.9){
       digitalWrite(led_one, HIGH);
       display.print("V3:");
       display.println("ERROR");
     }
     else{
-      v3 = (61*v3 -150)/6 + 0.01;
+      v3 = ((v3 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       display.print("V3:");
       display.println(v3);
     }
     //Tensión 4
     v4 = analogRead(volt4) * (5.0 / 1023.0);
-    if (v1 < 0 || v1 > 4.92){
+    if (v4 < 0 || v4 > 4.9){
       digitalWrite(led_one, HIGH);
       display.print("V1:");
       display.println("ERROR");
     }
     else{
-      v4 = (61*v4 -150)/6 + 0.01;
+      v4 = ((v4 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       display.print("V4:");
       display.println(v4);
     }
@@ -122,20 +122,68 @@ void loop(){
     display.setCursor(0, 0);
     display.println("Lectura en AC");
     //Lectura tensión uno
-    for (int i = 0; i < 150; i++){
-      v1 = v1 + analogRead(volt1) * (5.0 / 1023.0);
+    for (int i = 0; i < 1000; i++){
+      v1 =+ analogRead(volt1) * (5.0 / 1023.0);
     }
-    v1 = v1/150;
-    if (v1 < 0 || v1 > 4.92){
+    v1 = v1/1000;
+    if (v1 < 0 || v1 > 4.9){
       digitalWrite(led_one, HIGH);
       display.print("V1:");
       display.println("ERROR");
     }
     else{
-      v1 = (61*v1 -150)/6 + 0.01;
+      v1 = ((v1 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       v1 = v1*sqrt(2);
       display.print("V1:");
       display.println(v1);
+    }
+    //V2
+    for (int i = 0; i < 1000; i++){
+      v2 =+ analogRead(volt1) * (5.0 / 1023.0);
+    }
+    v2 = v2/1000;
+    if (v2 < 0 || v2 > 4.9){
+      digitalWrite(led_one, HIGH);
+      display.print("V2:");
+      display.println("ERROR");
+    }
+    else{
+      v2 = ((v2 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
+      v2 = v2*sqrt(2);
+      display.print("V2:");
+      display.println(v1);
+    }
+    //V3
+    for (int i = 0; i < 1000; i++){
+      v3 =+ analogRead(volt1) * (5.0 / 1023.0);
+    }
+    v3 = v3/1000;
+    if (v3 < 0 || v3 > 4.9){
+      digitalWrite(led_one, HIGH);
+      display.print("V3:");
+      display.println("ERROR");
+    }
+    else{
+      v3 = ((v3 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
+      v3 = v3*sqrt(2);
+      display.print("V3:");
+      display.println(v3);
+    }
+    //V4
+    for (int i = 0; i < 1000; i++){
+      v4 =+ analogRead(volt4) * (5.0 / 1023.0);
+    }
+    v4 = v1/1000;
+    if (v4 < 0 || v4 > 4.9){
+      digitalWrite(led_one, HIGH);
+      display.print("V4:");
+      display.println("ERROR");
+    }
+    else{
+      v4 = ((v4 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
+      v4 = v4*sqrt(2);
+      display.print("V4:");
+      display.println(v4);
     }
 
 
