@@ -82,7 +82,10 @@ void loop(){
       display.println("ERROR");
     }
     else{
+<<<<<<< HEAD
       digitalWrite(led_one, LOW);
+=======
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       v1 = ((v1 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       display.print("V1:");
       display.println(v1);
@@ -95,7 +98,10 @@ void loop(){
       display.println("ERROR");
     }
     else{
+<<<<<<< HEAD
       digitalWrite(led_two, LOW);
+=======
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       v2 = ((v2 - 0)/(5 - 0))*(25-(-25)) + -25 +0.1;
       display.print("V2:");
       display.println(v2);
@@ -103,12 +109,19 @@ void loop(){
     //Tension 3
     v3 = analogRead(volt3) * (5.0 / 1023.0);
     if (v3 < 0 || v3 > 4.9){
+<<<<<<< HEAD
       digitalWrite(led_three, HIGH);
+=======
+      digitalWrite(led_one, HIGH);
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       display.print("V3:");
       display.println("ERROR");
     }
     else{
+<<<<<<< HEAD
       digitalWrite(led_three, LOW);
+=======
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       v3 = ((v3 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       display.print("V3:");
       display.println(v3);
@@ -116,12 +129,19 @@ void loop(){
     //Tensión 4
     v4 = analogRead(volt4) * (5.0 / 1023.0);
     if (v4 < 0 || v4 > 4.9){
+<<<<<<< HEAD
       digitalWrite(led_four, HIGH);
+=======
+      digitalWrite(led_one, HIGH);
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       display.print("V1:");
       display.println("ERROR");
     }
     else{
+<<<<<<< HEAD
       digitalWrite(led_four, LOW);
+=======
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       v4 = ((v4 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       display.print("V4:");
       display.println(v4);
@@ -142,7 +162,10 @@ void loop(){
       display.println("ERROR");
     }
     else{
+<<<<<<< HEAD
       digitalWrite(led_one, LOW);
+=======
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       v1 = ((v1 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       v1 = v1*sqrt(2);
       display.print("V1:");
@@ -154,12 +177,19 @@ void loop(){
     }
     v2 = v2/1000;
     if (v2 < 0 || v2 > 4.9){
+<<<<<<< HEAD
       digitalWrite(led_two, HIGH);
+=======
+      digitalWrite(led_one, HIGH);
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       display.print("V2:");
       display.println("ERROR");
     }
     else{
+<<<<<<< HEAD
       digitalWrite(led_two, LOW);
+=======
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       v2 = ((v2 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       v2 = v2*sqrt(2);
       display.print("V2:");
@@ -171,12 +201,19 @@ void loop(){
     }
     v3 = v3/1000;
     if (v3 < 0 || v3 > 4.9){
+<<<<<<< HEAD
       digitalWrite(led_three, HIGH);
+=======
+      digitalWrite(led_one, HIGH);
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       display.print("V3:");
       display.println("ERROR");
     }
     else{
+<<<<<<< HEAD
       digitalWrite(led_three, LOW);
+=======
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       v3 = ((v3 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       v3 = v3*sqrt(2);
       display.print("V3:");
@@ -188,12 +225,19 @@ void loop(){
     }
     v4 = v1/1000;
     if (v4 < 0 || v4 > 4.9){
+<<<<<<< HEAD
       digitalWrite(led_four, HIGH);
+=======
+      digitalWrite(led_one, HIGH);
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       display.print("V4:");
       display.println("ERROR");
     }
     else{
+<<<<<<< HEAD
       digitalWrite(led_four, LOW);
+=======
+>>>>>>> 8edc739a6a2d14f2c8ffadd373a52606949ca50b
       v4 = ((v4 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       v4 = v4*sqrt(2);
       display.print("V4:");
