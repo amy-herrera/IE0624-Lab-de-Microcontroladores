@@ -39,7 +39,7 @@ float v4 = 0;
 
 
 void setup(){
-  Serial.begin(115200);
+  Serial.begin(9600);
   //Pines de tensión
   pinMode(volt1, INPUT);
   pinMode(volt2, INPUT);
@@ -163,7 +163,6 @@ void loop(){
     if (v2 < 0 || v2 > 4.9){
 
       digitalWrite(led_two, HIGH);
-      digitalWrite(led_one, HIGH);
       display.print("V2:");
       display.println("ERROR");
     }
@@ -181,7 +180,6 @@ void loop(){
     v3 = v3/1000;
     if (v3 < 0 || v3 > 4.9){
       digitalWrite(led_three, HIGH);
-      digitalWrite(led_one, HIGH);
       display.print("V3:");
       display.println("ERROR");
     }
@@ -201,7 +199,6 @@ void loop(){
     if (v4 < 0 || v4 > 4.9){
 
       digitalWrite(led_four, HIGH);
-      digitalWrite(led_one, HIGH);
       display.print("V4:");
       display.println("ERROR");
     }
@@ -219,69 +216,57 @@ void loop(){
 
 
 if (button == HIGH && mode == LOW){
-    Serial.println("Lectura en DC");
     //Tension 1
     v1 = analogRead(volt1) * (5.0 / 1023.0);
     if (v1 < 0 || v1 > 4.9){
-      Serial.print("V1:");
       Serial.println("ERROR");
     }
     else{
       v1 = ((v1 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
-      Serial.print("V1:");
       Serial.println(v1);
     }
     //Tension 2
     v2 = analogRead(volt2)* (5.0 / 1023.0);
     if (v2 < 0 || v2 > 4.9){
-      Serial.print("V2:");
       Serial.println("ERROR");
     }
     else{
       v2 = ((v2 - 0)/(5 - 0))*(25-(-25)) + -25 +0.1;
-      Serial.print("V2:");
       Serial.println(v2);
     }
     //Tension 3
     v3 = analogRead(volt3) * (5.0 / 1023.0);
     if (v3 < 0 || v3 > 4.9){
-      Serial.print("V3:");
       Serial.println("ERROR");
     }
     else{
       v3 = ((v3 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
-      Serial.print("V3:");
       Serial.println(v3);
     }
     //Tensión 4
     v4 = analogRead(volt4) * (5.0 / 1023.0);
     if (v4 < 0 || v4 > 4.9){
-      Serial.print("V1:");
       Serial.println("ERROR");
     }
     else{
       v4 = ((v4 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
-      Serial.print("V4:");
       Serial.println(v4);
     }
 }
 
 if (button == HIGH && mode == HIGH) {
   
-    Serial.println("Lectura en AC");
     //Lectura tensión uno
     for (int i = 0; i < 1000; i++){
       v1 =+ analogRead(volt1) * (5.0 / 1023.0);
     }
     v1 = v1/1000;
     if (v1 < 0 || v1 > 4.9){
-      Serial.print("V1:");
       Serial.println("ERROR");
     }
     else{
       v1 = ((v1 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       v1 = v1*sqrt(2);
-      Serial.print("V1:");
       Serial.println(v1);
     }
     //V2
@@ -290,13 +275,11 @@ if (button == HIGH && mode == HIGH) {
     }
     v2 = v2/1000;
     if (v2 < 0 || v2 > 4.9){
-      Serial.print("V2:");
       Serial.println("ERROR");
     }
     else{
       v2 = ((v2 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       v2 = v2*sqrt(2);
-      Serial.print("V2:");
       Serial.println(v1);
     }
     //V3
@@ -305,13 +288,11 @@ if (button == HIGH && mode == HIGH) {
     }
     v3 = v3/1000;
     if (v3 < 0 || v3 > 4.9){
-      Serial.print("V3:");
       Serial.println("ERROR");
     }
     else{
       v3 = ((v3 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       v3 = v3*sqrt(2);
-      Serial.print("V3:");
       Serial.println(v3);
     }
     //V4
@@ -320,13 +301,11 @@ if (button == HIGH && mode == HIGH) {
     }
     v4 = v1/1000;
     if (v4 < 0 || v4 > 4.9){
-      Serial.print("V4:");
       Serial.println("ERROR");
     }
     else{
       v4 = ((v4 - 0)/(5 - 0))*(25-(-25)) + -25+0.1;
       v4 = v4*sqrt(2);
-      Serial.print("V4:");
       Serial.println(v4);
     }
   
