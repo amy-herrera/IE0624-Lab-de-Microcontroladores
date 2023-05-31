@@ -40,6 +40,9 @@ uint8_t com_en;
 uint16_t battery;
 uint8_t batt_alarm;
 
+// Factor de conversión de tensión (9V a 5.4V)
+#define VOLTAGE_CONVERSION_FACTOR 1.67f
+
 uint16_t read_reg(int reg);
 void write_reg(uint8_t reg, uint8_t value);
 uint8_t read_xyz(int16_t vecs[3]);
@@ -206,8 +209,9 @@ static uint16_t read_adc_naiive(uint8_t channel)
 }
 
 void adc_update(void){
-	battery = read_adc_naiive(1)*9/4095;
+	battery = (read_adc_naiive(1)*VOLTAGE_CONVERSION_FACTOR)/4095.0f;
 }
+
 
 char *axes[] = { "X: ", "Y: ", "Z: " };
 
