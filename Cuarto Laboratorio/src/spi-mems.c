@@ -263,9 +263,7 @@ int main(void)
     gpio_clear(GPIOC, GPIO1);
 	spi_send(SPI5, GYR_CTRL_REG1); 
 	spi_read(SPI5);
-	spi_send(SPI5, GYR_CTRL_REG1_PD | GYR_CTRL_REG1_XEN |
-			GYR_CTRL_REG1_YEN | GYR_CTRL_REG1_ZEN |
-			(3 << GYR_CTRL_REG1_BW_SHIFT));
+	spi_send(SPI5, GYR_CTRL_REG1_PD | GYR_CTRL_REG1_XEN | GYR_CTRL_REG1_YEN | GYR_CTRL_REG1_ZEN | (3 << GYR_CTRL_REG1_BW_SHIFT));
 	spi_read(SPI5);
 	gpio_set(GPIOC, GPIO1); 
 
@@ -361,7 +359,7 @@ int main(void)
 		gfx_setCursor(15, 144);
 		gfx_puts(lcd_out);
 
-		sprintf(int_to_str, "%d", battery);
+		sprintf(int_to_str, "%d", battery*100/9);
 
 		gfx_setCursor(15, 198);
 		gfx_puts("Batt: ");
@@ -370,7 +368,7 @@ int main(void)
 		gfx_puts(int_to_str);
 
 		gfx_setCursor(160, 232);
-		gfx_puts("V");
+		gfx_puts("%");
 	
 		lcd_show_frame();
 		
