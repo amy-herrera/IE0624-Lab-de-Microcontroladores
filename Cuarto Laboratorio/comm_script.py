@@ -8,7 +8,7 @@ import time
 import json
 import os
 
-serial_port = serial.Serial(port="/dev/ttyACM0", baudrate="Ingresar el baudrate aquí", timeout=1)
+serial_port = serial.Serial(port="/dev/ttyACM0", baudrate="9600", timeout=1)
 print("Conectado al microcontrolador")
 data = []
 data_header = ["x", "y", "z", "Battery"]
@@ -21,11 +21,11 @@ def on_publish(client,userdata,result):             #create function for callbac
 #Datos para la conexión con el cliente:
 broker = "iot.eie.ucr.ac.cr"
 topic = "v1/devices/me/telemetry"
-device= "Ingrese el token del device aquí"
+device= "i2k08wg3y7gztp93o1yt"
 port = 1883
 
 #Establecemos los parámetros de conexión
-client = mqtt.Client("Cliente aquí")
+client = mqtt.Client("B53473")
 client.on_publish = on_publish
 client.username_pw_set(device)
 client.connect(broker, port, keepalive=60)
