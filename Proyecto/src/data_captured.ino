@@ -1,6 +1,5 @@
 #include <Arduino_APDS9960.h>
 
-
 void setup() {
   Serial.begin(9600);
   while(!Serial){};
@@ -26,7 +25,7 @@ void loop() {
 
    p = APDS.readProximity();
 
-   if(p == 0 && c > 10 && sum >0){
+   if(p >= 0 && c > 10 && sum >0){
     
     float redRatio = r/sum;
     float greenRatio = v/sum;
