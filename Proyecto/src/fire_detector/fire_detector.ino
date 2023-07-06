@@ -7,9 +7,6 @@
 
 #include "model.h"
 
-unsigned long buzzerStartTime = 0;
-const unsigned long buzzerDuration = 2000;
-bool toneActive = false;
 
 // pull in all the TFLM ops, you can remove this line and
 // only pull in the TFLM ops you need, if would like to reduce
