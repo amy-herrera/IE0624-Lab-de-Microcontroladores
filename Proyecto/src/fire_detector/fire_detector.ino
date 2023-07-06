@@ -26,7 +26,7 @@ TfLiteTensor* tflOutputTensor = nullptr;
 constexpr int tensorArenaSize = 8 * 1024;
 byte tensorArena[tensorArenaSize] __attribute__((aligned(16)));
 
-// array to map gesture index to a name
+//Arreglo para mostrar las dos posible salidas que quiero identificar.
 const char* CLASSES[] = {
   "fuego",
   "no fuego"
@@ -45,7 +45,7 @@ void setup() {
   //get the TFL representation of the model byte array
   tflModel = tflite::GetModel(model);
   if (tflModel->version() != TFLITE_SCHEMA_VERSION) {
-    Serial.println("Model schema mismatch!");
+    Serial.println("La versión del modelo no coincide!");
     while (1);
   }
 
@@ -64,22 +64,26 @@ void loop() {
   int r, g, b, c, p;
   float suma;
 
+  // Esperar hasta que los datos de color y proximidad estén disponibles
   while (!APDS.colorAvailable() || !APDS.proximityAvailable()){};
 
+  // Leer los valores de color y proximidad
   APDS.readColor(r,g,b,c);
   suma = r+g+b;
-
   p = APDS.readProximity();
 
+  //Verificar la condición mínima para evaluar los valores capturados
   if (p >= 0 && c > 10 && suma > 0){
     float red = r/suma;
     float green = g/suma;
     float blue = b/suma;
 
+    // Asignar los valores de entrada al tensor del modelo
     tflInputTensor->data.f[0] = red;
     tflInputTensor->data.f[1] = green;
     tflInputTensor->data.f[2] = blue;
 
+    //Llamar al modelo para poder utilizar sus resultados
     TfLiteStatus invokeStatus = tflInterpreter->Invoke();
     if (invokeStatus != kTfLiteOk){
       Serial.println("Fallo el llamado a la red");
@@ -87,7 +91,7 @@ void loop() {
       return;
     }
 
-
+    //Imprimir las certidumbres
     for (int i = 0; i < 2; i++){
       Serial.print(CLASSES[i]);
       Serial.print(" ");
@@ -97,21 +101,16 @@ void loop() {
 
     Serial.println();
 
+    //Verifica el umbral establecido para poder activar el tono de alarma
+
     if(int(tflOutputTensor->data.f[0]*100) > 95){
       if (!toneActive){
         tone(2, 1000, 2000);
-        //buzzerStartTime = millis();
-        //toneActive = true;
       }
     }
     else if(int(tflOutputTensor->data.f[1]*100) > 95){
       noTone(2);
-      //toneActive = false;
     }
-    //if (toneActive && (millis()-buzzerStartTime >= buzzerDuration)){
-    //  noTone(2);
-    //  toneActive = false;
-    //}
   
     }
 
